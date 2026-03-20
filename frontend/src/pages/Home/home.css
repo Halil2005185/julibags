@@ -1,0 +1,24 @@
+.floating {
+  animation: floating 3s ease-in-out infinite;
+  transform: translateX(0px);
+}
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.Paragraph {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff6b6b, #c77dff, #4ecdc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}

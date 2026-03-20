@@ -1,0 +1,22 @@
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+header {
+  background: linear-gradient(
+    90deg,
+    #ff6b6b,
+    #ffd93d,
+    #4ecdc4,
+    #c77dff,
+    #ff6b6b
+  );
+  background-size: 300% 100%;
+  animation: gradientShift 6s ease infinite;
+}
