@@ -1,16 +1,12 @@
+import Animation from "../../components/Animations/animation"
 import CardList from "../../components/CardList/cardList"
-import ItemCard from "../../components/itemCcrd/itemCard"
+import Categories from "../../components/Categories/categories"
 import "./home.css"
 function Home() {
     return <section className="w-screen flex justify-center items-center flex-col  ">
-        <div className="flex flex-col items-center justify-center " >
-            <p className="floating text-[60px] mx-auto inlin">👜</p>
-            <h1 className="Paragraph" >
-                تشكيلة حقائب جولي
-            </h1>
-            <p className="text-[#888] text-[18px] mt-0 mx-auto mb-10 " >اكتشفي أحدث تشكيلة من الحقائب الفاخرة والعصرية</p>
-        </div>
-        <CardList />
+        <Animation />
+        <Categories />
+        <CardList/>
     </section>
 }
 export default Home
