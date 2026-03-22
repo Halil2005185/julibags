@@ -1,0 +1,15 @@
+.sidebar-aside {
+  width: 240px;
+  background: #fff;
+  border-left: 1px solid #f0f0f0;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-link-active {
+  background: linear-gradient(135deg, #ff6b6b, #c77dff);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.sidebar-link:not(.sidebar-link-active):hover {
+  background: #f8f8f8;
+}

@@ -5,7 +5,7 @@ import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 
 function Header() {
     return (
-        <header className="w-screen flex items-center px-0 py-4 justify-around " >
+        <header className="w-screen flex items-center px-0 py-4 justify-around h-[75px] " >
             <div className="flex items-center gap-3 cursor-pointer " >
                 <img src={LogoIcon} className="w-[50px] rounded-full  " alt="Logo Image" />
                 <p className="text-white font-serif " >JULI BAGS <span>👜✨</span> </p>

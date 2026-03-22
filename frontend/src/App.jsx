@@ -10,9 +10,10 @@ import CrochetBags from "./pages/CrochetBags/crochetBags"
 import BeadedBags from "./pages/BeadedBags/beadedBags"
 import BeadedGifts from "./pages/BeadedGifts/beadedGifts"
 import AdminLogin from "./pages/admin/adminLogin"
+import AdminMain from "./pages/admin/adminMain"
 function App() {
   return (
-    <section className="min-h-screen flex flex-col gap-8">
+    <section className="min-h-screen flex flex-col">
       <Header />
       <div className="page-load ">
         <Routes>
@@ -24,6 +25,7 @@ function App() {
           <Route path="/category/beaded-bags" element={<BeadedBags />} />
           <Route path="/category/beaded-gifts" element={<BeadedGifts />} />
           <Route path="/admin/adminLogin101" element={<AdminLogin />} />
+          <Route path="/admin/adminMain" element={<AdminMain />} />
 
 
         </Routes>
