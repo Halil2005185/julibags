@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "../Header/header.css"
 import LogoIcon from "/images/LogoImage.jpg"
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
@@ -6,10 +7,12 @@ import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 function Header() {
     return (
         <header className="w-screen flex items-center px-0 py-4 justify-around h-[75px] " >
-            <div className="flex items-center gap-3 cursor-pointer " >
-                <img src={LogoIcon} className="w-[50px] rounded-full  " alt="Logo Image" />
-                <p className="text-white font-serif " >JULI BAGS <span>👜✨</span> </p>
-            </div>
+            <Link to={"/"}>
+                <div className="flex items-center gap-3 cursor-pointer " >
+                    <img src={LogoIcon} className="w-[50px] rounded-full  " alt="Logo Image" />
+                    <p className="text-white font-serif " >JULI BAGS <span>👜✨</span> </p>
+                </div>
+            </Link>
 
             <div className="flex items-center gap-2 " >
                 <p className="text-white font-serif text-[20px] " >أجمل الحقائب لك ✨</p>

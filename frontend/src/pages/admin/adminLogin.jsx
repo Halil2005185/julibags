@@ -5,25 +5,27 @@ import { useNavigate } from "react-router-dom";
 function AdminLogin() {
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState(" ")
+    const [email, setEmail] = useState("    ")
     const [password, setPassword] = useState("")
-    const [error, setError] = useState(false)
+    const [error, setError] = useState("")
     console.log({ email, password });
 
     async function handleForm(e) {
         e.preventDefault()
+        setError("")
         console.log({ email, password });
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/admin/login`, {
                 email, password
             })
             const token = res.data.token
             localStorage.setItem("adminToken", token)
 
             setTimeout(() => {
-                navigate("admin/adminMain")
+                navigate("/admin/adminMain")
             }, 1000);
         } catch (error) {
+            setError("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.")
             console.log(error);
 
         }
