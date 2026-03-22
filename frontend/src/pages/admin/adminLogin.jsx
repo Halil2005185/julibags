@@ -1,7 +1,34 @@
+import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
+    const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState(" ")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState(false)
+    console.log({ email, password });
+
+    async function handleForm(e) {
+        e.preventDefault()
+        console.log({ email, password });
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
+                email, password
+            })
+            const token = res.data.token
+            localStorage.setItem("adminToken", token)
+
+            setTimeout(() => {
+                navigate("admin/adminMain")
+            }, 1000);
+        } catch (error) {
+            console.log(error);
+
+        }
+
+    }
 
     return (
         <section className="flex items-center justify-center min-h-[calc(100vh-200px)] px-4 py-12">
@@ -9,7 +36,7 @@ function AdminLogin() {
                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
 
-                <div className="relative backdrop-blur-sm bg-white/80 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-8 md:p-10">
+                <div className="relative flex flex-col gap-4 backdrop-blur-sm bg-white/80 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-8 md:p-10">
                     <div className="text-center mb-8">
                         <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25 mb-5 rotate-3 hover:rotate-0 transition-transform duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -24,7 +51,7 @@ function AdminLogin() {
                         </p>
                     </div>
 
-                    <form className="flex flex-col gap-5">
+                    <form onSubmit={handleForm} className="flex flex-col gap-5">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-semibold text-gray-600 tracking-wide" htmlFor="email">
                                 Email Address
@@ -36,6 +63,8 @@ function AdminLogin() {
                                     </svg>
                                 </span>
                                 <input
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     id="email"
                                     type="email"
                                     required
@@ -56,6 +85,8 @@ function AdminLogin() {
                                     </svg>
                                 </span>
                                 <input
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     required
@@ -79,6 +110,7 @@ function AdminLogin() {
                                     )}
                                 </button>
                             </div>
+
                         </div>
 
                         <button
@@ -89,6 +121,14 @@ function AdminLogin() {
                         </button>
                     </form>
 
+                    {error && (
+                        <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center gap-2 bg-red-50 border border-red-200 text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
+                            </svg>
+                            {error}
+                        </div>
+                    )}
                     <p className="text-center text-xs text-gray-300 mt-8 select-none">
                         Secure admin access &bull; JuliBags
                     </p>
