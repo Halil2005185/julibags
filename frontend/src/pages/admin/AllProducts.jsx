@@ -46,7 +46,7 @@ function AllProducts() {
                 `${import.meta.env.VITE_BACKEND_URL}/api/admin/products/${deleteId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
-            setProducts(products.filter((p) => p.documentId  !== deleteId))
+            setProducts(products.filter((p) => p.documentId !== deleteId))
             showToast("تم حذف المنتج بنجاح", "success")
         } catch (err) {
             console.error(err)
@@ -125,10 +125,10 @@ function AllProducts() {
     return (
         <section className="flex min-h-screen bg-[#f8fafc]">
             <SiberBar />
-            <div className="flex-1 ml-[260px]">
+            <div className="ms:flex-1 ms:ml-[260px]">
                 <div className="px-6 md:px-10 py-8 max-w-6xl mx-auto">
 
-                    <div className="mb-8 flex items-center justify-between">
+                    <div className="mb-8  flex flex-col sm:flex-row gap-5 sm:gap-0 items-center justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -386,11 +386,10 @@ function AllProducts() {
             )}
 
             {toast.show && (
-                <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-[fadeIn_0.3s_ease-out] ${
-                    toast.type === "success"
-                        ? "bg-emerald-500 text-white"
-                        : "bg-red-500 text-white"
-                }`}>
+                <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-[fadeIn_0.3s_ease-out] ${toast.type === "success"
+                    ? "bg-emerald-500 text-white"
+                    : "bg-red-500 text-white"
+                    }`}>
                     {toast.type === "success" ? (
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

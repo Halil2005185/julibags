@@ -96,10 +96,11 @@ function AddProduct() {
     }
 
     return (
-        <section className="flex min-h-screen bg-[#f8fafc]">
+        <section className="flex flex-col  min-h-screen bg-[#f8fafc]">
+
             <SiberBar />
-            <div className="flex-1 ml-[260px]">
-                <div className="px-6 md:px-10 py-8 max-w-4xl mx-auto">
+            <div className="ms:flex-1 ms:ml-[260px]">
+                <div className="px-6 md:px-10 py-8 ms:max-w-4xl mx-auto">
 
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">

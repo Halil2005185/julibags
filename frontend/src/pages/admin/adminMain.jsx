@@ -5,7 +5,7 @@ function AdminMain() {
     return (
         <section className="flex min-h-screen bg-[#f8fafc]">
             <SiberBar />
-            <div className="flex-1 ml-[260px] w-[83%] ">
+            <div className="ms:flex-1 sm:ml-[260px] w-full sm:w-[83%] ">
                 <div className="px-8 py-10 flex flex-col items-center justify-center min-h-[calc(100vh-75px)]">
                     <div className="text-center mb-10">
                         <div className="mx-auto w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg mb-6 bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-200">
