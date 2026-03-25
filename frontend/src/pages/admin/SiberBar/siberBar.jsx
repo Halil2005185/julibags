@@ -109,13 +109,11 @@ function SiberBar({ children }) {
                     )}
                 </nav>
 
-                {/* Footer */}
                 <div className="px-5 py-4 border-t border-gray-100 mt-auto">
                     <p className="text-[0.65rem] text-gray-300 text-center tracking-wide">© 2026 JuliBags</p>
                 </div>
             </section>
 
-            {/* Page content (wrapped so children have sidebar context) */}
             {children}
         </SidebarContext.Provider>
     )

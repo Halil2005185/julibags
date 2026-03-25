@@ -100,14 +100,12 @@ function AddProduct() {
     return (
         <SiberBar>
             <section className="min-h-screen bg-[#f8fafc]">
-                {/* Top bar */}
                 <div className="flex items-center justify-between px-6 md:px-10 py-4 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
                     <div className="flex items-center gap-3">
                         <SidebarToggle />
                         <h2 className="text-sm font-bold text-gray-800 tracking-tight hidden sm:block">إضافة منتج</h2>
                     </div>
 
-                    {/* Progress dots */}
                     <div className="flex items-center gap-2">
                         {steps.map((step, i) => (
                             <div key={i} className="flex items-center gap-1.5">
@@ -121,7 +119,6 @@ function AddProduct() {
 
                 <div className="px-6 md:px-10 py-8 max-w-4xl mx-auto">
 
-                    {/* Page header */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -164,7 +161,6 @@ function AddProduct() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
 
-                        {/* Product info card */}
                         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
                             <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -212,7 +208,6 @@ function AddProduct() {
                             </div>
                         </div>
 
-                        {/* Images card */}
                         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
@@ -284,7 +279,6 @@ function AddProduct() {
                             )}
                         </div>
 
-                        {/* Actions */}
                         <div className="flex items-center justify-end gap-3 pt-2">
                             <button
                                 type="button"

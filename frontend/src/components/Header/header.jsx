@@ -52,15 +52,21 @@ function Header() {
                     أجمل الحقائب لك ✨
                 </p>
                 <div className="flex items-center justify-center gap-2">
-                    <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
-                        <FaTiktok className="text-[15px] sm:text-[17px]" />
-                    </span>
-                    <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
-                        <FaInstagram className="text-[15px] sm:text-[17px]" />
-                    </span>
-                    <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
-                        <FaWhatsapp className="text-[15px] sm:text-[17px]" />
-                    </span>
+                    <a href="https://www.tiktok.com/@juli.bags?_r=1&_t=ZS-94zJ1SB1iEB">
+                        <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                            <FaTiktok className="text-[15px] sm:text-[17px]" />
+                        </span>
+                    </a>
+                    <a href="https://www.instagram.com/juli.bags24?igsh=MmFhdXJqNzk1emRn">
+                        <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                            <FaInstagram className="text-[15px] sm:text-[17px]" />
+                        </span>
+                    </a>
+                    <a href="https://wa.me/905342170870">
+                        <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 text-white cursor-pointer hover:bg-white/30 hover:border-white/40 hover:scale-110 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                            <FaWhatsapp className="text-[15px] sm:text-[17px]" />
+                        </span>
+                    </a>
                 </div>
             </div>
         </header>

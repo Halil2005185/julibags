@@ -17,7 +17,13 @@ function ItemCard({ bag, index }) {
         if (cardRef.current) observer.observe(cardRef.current)
         return () => observer.disconnect()
     }, [index])
-    console.log(`${import.meta.env.VITE_STRAPI_URL}${bag?.image[0]?.url}`);
+
+    function openWhatsApp(imageUrl) {
+        const phone = "905342170870"
+        const message = `Hello 👋 I want this product Image: ${imageUrl}`
+        const Url = `https://wa.me/${phone}/?text=${encodeURIComponent(message)}`
+        window.open(Url, "_blank", "noopener,noreferrer") //noopener,noreferrer use to protect the user when open the link
+    }
 
     return (
         <div
@@ -28,7 +34,7 @@ function ItemCard({ bag, index }) {
                 transform: visible ? "translateY(0px)" : "translateY(40px)",
             }}
         >
-            <img src={`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`} alt="" />
+            <img src={`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`} alt="ProductImage" onClick={() => openWhatsApp(`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`)} />
             <div className="p-6" dir="rtl">
                 <h3 className="text-xl font-black text-gray-800 mb-2">{bag.name}</h3>
 
