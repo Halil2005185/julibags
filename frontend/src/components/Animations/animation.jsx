@@ -6,7 +6,7 @@ function    Animation() {
             <h1 className="Paragraph" >
                 تشكيلة حقائب جولي
             </h1>
-            <p className="text-[#888] text-[18px] mt-0 mx-auto mb-10 " >اكتشفي أحدث تشكيلة من الحقائب الفاخرة والعصرية</p>
+            <p className="text-[#888] text-[18px] mt-0 mx-auto mb-10 text-center " >اكتشفي أحدث تشكيلة من الحقائب الفاخرة والعصرية</p>
         </div>
     </section>
 }
