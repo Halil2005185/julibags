@@ -7,7 +7,7 @@ function NameBags() {
         <div>
             <Animation />
             <Categories />
-            <CardList />
+            <CardList categorySlug="name-bags" />
 
             <h1>NameBags Page</h1>
         </div>

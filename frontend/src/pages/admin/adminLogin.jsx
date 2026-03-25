@@ -4,43 +4,47 @@ import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
     const navigate = useNavigate()
-    const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("    ")
+    const [showPassword, setShowPassword] = useState(false)
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
-    console.log({ email, password });
+    const [loading, setLoading] = useState(false)
 
     async function handleForm(e) {
         e.preventDefault()
         setError("")
-        console.log({ email, password });
+        setLoading(true)
         try {
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/admin/login`, {
                 email, password
             })
             const token = res.data.token
             localStorage.setItem("adminToken", token)
-
             setTimeout(() => {
                 navigate("/admin/adminMain")
-            }, 1000);
+            }, 1000)
         } catch (error) {
             setError("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.")
-            console.log(error);
-
+            console.log(error)
+        } finally {
+            setLoading(false)
         }
-
     }
 
     return (
-        <section className="flex items-center justify-center min-h-[calc(100vh-200px)] px-4 py-12">
-            <div className="relative w-full max-w-md">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
+        <section className="flex items-center justify-center min-h-[calc(100vh-200px)] px-4 py-12 relative overflow-hidden">
 
-                <div className="relative flex flex-col gap-4 backdrop-blur-sm bg-white/80 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] p-8 md:p-10">
+            {/* Decorative floating orbs */}
+            <div className="absolute -top-20 -left-20 w-60 h-60 bg-emerald-400/15 rounded-full blur-[80px] pointer-events-none animate-pulse" />
+            <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-teal-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-[#c77dff]/10 rounded-full blur-[60px] pointer-events-none" />
+
+            <div className="relative w-full max-w-md">
+                <div className="relative flex flex-col gap-4 backdrop-blur-sm bg-white/90 border border-white/60 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.08)] p-8 md:p-10">
+
+                    {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25 mb-5 rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25 mb-5 rotate-3 hover:rotate-0 hover:scale-105 transition-all duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
@@ -53,6 +57,17 @@ function AdminLogin() {
                         </p>
                     </div>
 
+                    {/* Error */}
+                    {error && (
+                        <div className="mb-2 px-4 py-3 rounded-xl text-sm flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 animate-[fadeIn_0.3s_ease-out]">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
+                            </svg>
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Form */}
                     <form onSubmit={handleForm} className="flex flex-col gap-5">
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-semibold text-gray-600 tracking-wide" htmlFor="email">
@@ -112,32 +127,31 @@ function AdminLogin() {
                                     )}
                                 </button>
                             </div>
-
                         </div>
 
                         <button
                             type="submit"
-                            className="mt-2 w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-base tracking-wide shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                            disabled={loading}
+                            className="mt-2 w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-base tracking-wide shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
                         >
-                            Sign In
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                    Signing in...
+                                </>
+                            ) : (
+                                "Sign In"
+                            )}
                         </button>
                     </form>
 
-                    {error && (
-                        <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center gap-2 bg-red-50 border border-red-200 text-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
-                            </svg>
-                            {error}
-                        </div>
-                    )}
                     <p className="text-center text-xs text-gray-300 mt-8 select-none">
                         Secure admin access &bull; JuliBags
                     </p>
                 </div>
             </div>
         </section>
-    );
+    )
 }
 
-export default AdminLogin;
+export default AdminLogin

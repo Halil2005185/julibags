@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react"
-import SiberBar from "./SiberBar/siberBar"
+import SiberBar, { SidebarToggle } from "./SiberBar/siberBar"
 import axios from "axios"
 
 function AddProduct() {
@@ -29,10 +29,8 @@ function AddProduct() {
     function handleImageChange(e) {
         const files = Array.from(e.target.files)
         if (files.length === 0) return
-
         const newImages = [...images, ...files].slice(0, 5)
         setImages(newImages)
-
         const newPreviews = newImages.map((file) => URL.createObjectURL(file))
         setPreviews(newPreviews)
     }
@@ -58,14 +56,11 @@ function AddProduct() {
 
         try {
             const formData = new FormData()
-
             const productData = {
                 name: name.trim(),
                 category: category,
             }
-
             formData.append("data", JSON.stringify(productData))
-
             images.forEach((file) => {
                 formData.append("files.images", file)
             })
@@ -95,27 +90,54 @@ function AddProduct() {
         }
     }
 
+    // Progress indicator
+    const steps = [
+        { label: "الاسم", done: name.trim().length > 0 },
+        { label: "الفئة", done: category !== "" },
+        { label: "الصور", done: images.length > 0 },
+    ]
+
     return (
-        <section className="flex flex-col  min-h-screen bg-[#f8fafc]">
+        <SiberBar>
+            <section className="min-h-screen bg-[#f8fafc]">
+                {/* Top bar */}
+                <div className="flex items-center justify-between px-6 md:px-10 py-4 bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
+                    <div className="flex items-center gap-3">
+                        <SidebarToggle />
+                        <h2 className="text-sm font-bold text-gray-800 tracking-tight hidden sm:block">إضافة منتج</h2>
+                    </div>
 
-            <SiberBar />
-            <div className="ms:flex-1 ms:ml-[260px]">
-                <div className="px-6 md:px-10 py-8 ms:max-w-4xl mx-auto">
+                    {/* Progress dots */}
+                    <div className="flex items-center gap-2">
+                        {steps.map((step, i) => (
+                            <div key={i} className="flex items-center gap-1.5">
+                                <div className={`w-2 h-2 rounded-full transition-all duration-300 ${step.done ? "bg-emerald-500 scale-110" : "bg-gray-200"}`} />
+                                <span className={`text-[11px] font-semibold transition-colors hidden sm:inline ${step.done ? "text-emerald-600" : "text-gray-300"}`}>{step.label}</span>
+                                {i < steps.length - 1 && <div className="w-4 h-px bg-gray-200 hidden sm:block" />}
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
+                <div className="px-6 md:px-10 py-8 max-w-4xl mx-auto">
+
+                    {/* Page header */}
                     <div className="mb-8">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
                             </div>
-                            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                                إضافة منتج جديد
-                            </h1>
+                            <div>
+                                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                                    إضافة منتج جديد
+                                </h1>
+                                <p className="text-gray-400 text-sm">
+                                    أضف منتجات جديدة إلى متجرك بسهولة
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-gray-400 text-sm mr-[52px]">
-                            أضف منتجات جديدة إلى متجرك بسهولة
-                        </p>
                     </div>
 
                     {success && (
@@ -142,6 +164,7 @@ function AddProduct() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
 
+                        {/* Product info card */}
                         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
                             <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -189,13 +212,21 @@ function AddProduct() {
                             </div>
                         </div>
 
+                        {/* Images card */}
                         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
-                            <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                صور المنتج
-                            </h2>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    صور المنتج
+                                </h2>
+                                {images.length > 0 && (
+                                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                                        {images.length}/5
+                                    </span>
+                                )}
+                            </div>
 
                             <div
                                 onClick={() => fileInputRef.current?.click()}
@@ -238,7 +269,7 @@ function AddProduct() {
                                                     e.stopPropagation()
                                                     removeImage(index)
                                                 }}
-                                                className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white text-gray-600 shadow-sm"
+                                                className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white text-gray-600 shadow-sm cursor-pointer"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -253,6 +284,7 @@ function AddProduct() {
                             )}
                         </div>
 
+                        {/* Actions */}
                         <div className="flex items-center justify-end gap-3 pt-2">
                             <button
                                 type="button"
@@ -275,10 +307,7 @@ function AddProduct() {
                             >
                                 {loading ? (
                                     <>
-                                        <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
+                                        <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                                         جاري الإضافة...
                                     </>
                                 ) : (
@@ -293,8 +322,8 @@ function AddProduct() {
                         </div>
                     </form>
                 </div>
-            </div>
-        </section>
+            </section>
+        </SiberBar>
     )
 }
 

@@ -6,7 +6,7 @@ function CrochetBags() {
     return <section>
         <Animation />
         <Categories />
-        <CardList/>
+        <CardList categorySlug="crochet-bags" />
         <h1>CrochetBags page</h1>
     </section>
 }

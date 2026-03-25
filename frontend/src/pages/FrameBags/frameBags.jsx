@@ -6,7 +6,7 @@ function FrameBags() {
     return <section>
         <Animation />
         <Categories />
-        <CardList/>
+        <CardList categorySlug="frame-bags" />
         <h1>FrameBags page</h1>
     </section>
 }

@@ -6,7 +6,7 @@ function BeadedBags() {
     return <section>
         <Animation />
         <Categories />
-        <CardList/>
+        <CardList categorySlug="beaded-bags" />
         <h1>BeadedBags page</h1>
     </section>
 }

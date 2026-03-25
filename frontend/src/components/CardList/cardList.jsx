@@ -2,14 +2,19 @@ import { useEffect, useState } from "react";
 import ItemCard from "../itemCcrd/itemCard";
 import axios from "axios";
 
-function CardList() {
+function CardList({ categorySlug }) {
     const [bags, setBags] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         async function getProducts() {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products?populate=*`)
+                const res = categorySlug
+                    ?
+                    await axios.get(`${import.meta.env.VITE_API_URL}/api/products?populate=*&filters[category][slug][$eq]=${categorySlug}`)
+                    :
+                    await axios.get(`${import.meta.env.VITE_API_URL}/api/products?populate=*`)
+
                 setBags(res.data.data)
                 console.log(res.data.data);
 
@@ -20,7 +25,7 @@ function CardList() {
             }
         }
         getProducts()
-    }, [])
+    }, [categorySlug])
 
     if (loading) return <p className="text-center text-gray-400 text-xl py-20">جاري التحميل... ⏳</p>
 

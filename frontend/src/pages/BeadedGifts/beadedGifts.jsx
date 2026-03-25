@@ -5,8 +5,8 @@ import Categories from "../../components/Categories/categories"
 function BeadedGifts() {
     return <section>
         <Animation />
-        <Categories />
-        <CardList/>
+        <Categories  />
+        <CardList categorySlug="beaded-gifts"/>
         <h1>BeadedGifts page</h1>
     </section>
 }
