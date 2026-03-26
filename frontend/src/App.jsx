@@ -14,6 +14,7 @@ import AdminMain from "./pages/admin/adminMain"
 import AddProduct from "./pages/admin/addProduct"
 import AllProducts from "./pages/admin/AllProducts"
 import ProtectedRoute from "./components/ProtectedRoute/protectedRoute"
+import NotFound from "./pages/NotFound/notFound"
 function App() {
   return (
     <section className="min-h-screen flex flex-col">
@@ -27,6 +28,8 @@ function App() {
           <Route path="/category/crochet-bags" element={<CrochetBags />} />
           <Route path="/category/beaded-bags" element={<BeadedBags />} />
           <Route path="/category/beaded-gifts" element={<BeadedGifts />} />
+
+
           <Route path="/admin/adminLogin101" element={
             <AdminLogin />
           } />
@@ -46,13 +49,12 @@ function App() {
             <ProtectedRoute>
               <AllProducts />
             </ProtectedRoute>
-
-          }
-
-          />
+          } />
+          <Route path="*" element={<NotFound />}></Route>
 
 
         </Routes>
+
       </div>
       <Footer />
     </section>

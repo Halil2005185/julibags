@@ -34,8 +34,9 @@ function ItemCard({ bag, index }) {
                 transform: visible ? "translateY(0px)" : "translateY(40px)",
             }}
         >
-            <img src={`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`} alt="ProductImage" onClick={() => openWhatsApp(`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`)} />
+            <img className="cursor-pointer" src={`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`} alt="ProductImage" onClick={() => openWhatsApp(`${import.meta.env.VITE_API_URL}${bag?.image[0]?.url}`)} />
             <div className="p-6" dir="rtl">
+                <p className="my-1">اضغط على الصورة لإرسالها إلى واتساب</p>
                 <h3 className="text-xl font-black text-gray-800 mb-2">{bag.name}</h3>
 
             </div>
