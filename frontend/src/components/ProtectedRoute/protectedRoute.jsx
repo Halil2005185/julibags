@@ -14,6 +14,9 @@ function ProtectedRoute({ children }) {
     if (!token) {
         return <Navigate to={"/admin/adminLogin101"} />
     }
+    if (token) {
+        return <Navigate to={"/admin/adminMain"} />
+    }
     return children
 }
 export default ProtectedRoute
