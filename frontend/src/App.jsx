@@ -31,11 +31,10 @@ function App() {
 
 
           <Route path="/admin/adminLogin101" element={
-            <AdminLogin />
+            <AdminLogin redirectIfAuth={true} />
           } />
           <Route path="/admin/adminMain" element={
-            <ProtectedRoute>
-
+            <ProtectedRoute >
               <AdminMain />
             </ProtectedRoute>
           } />
