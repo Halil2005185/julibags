@@ -31,12 +31,11 @@ function App() {
 
 
           <Route path="/admin/adminLogin101" element={
-            <ProtectedRoute>
-              <AdminLogin />
-            </ProtectedRoute>
+            <AdminLogin />
           } />
           <Route path="/admin/adminMain" element={
             <ProtectedRoute>
+
               <AdminMain />
             </ProtectedRoute>
           } />
