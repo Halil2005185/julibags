@@ -9,7 +9,7 @@ router.post("/login", async (req, res) => {
     console.log(req.body);
 
     const strapiRes = await axios.post(
-      `http://localhost:1337/admin/login`,
+      `${process.env.STRAPI_URL}/admin/login`,
       req.body,
     );
 
