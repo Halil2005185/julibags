@@ -11,12 +11,13 @@ function ProtectedRoute({ children }) {
         window.addEventListener("storage", handleStorage)
         return () => window.removeEventListener("storage", handleStorage)
     }, [])
-    if (!token) {
-        return <Navigate to={"/admin/adminLogin101"} />
-    }
     if (token) {
         return <Navigate to={"/admin/adminMain"} />
     }
+    else {
+        return <Navigate to={"/admin/adminLogin101"} />
+    }
+
     return children
 }
 export default ProtectedRoute
