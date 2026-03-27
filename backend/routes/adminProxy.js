@@ -38,6 +38,10 @@ router.post("/login", async (req, res) => {
 const upload = multer({ storage: multer.memoryStorage() });
 router.post("/products", upload.array("files.images"), async (req, res) => {
   try {
+    console.log("STRAPI_URL:", process.env.STRAPI_URL);
+    console.log("TOKEN:", process.env.STRAPI_API_TOKEN ? "موجود" : "غير موجود");
+    console.log("files:", req.files?.length);
+    console.log("body:", req.body);
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
@@ -71,6 +75,7 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
       },
       { headers: { Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}` } },
     );
+
     res.json(productRes.data);
   } catch (err) {
     console.log(err);
