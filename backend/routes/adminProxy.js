@@ -2,6 +2,7 @@ import axios from "axios";
 import express, { json } from "express";
 import jwt from "jsonwebtoken";
 import multer from "multer";
+import FormData from "form-data";
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
