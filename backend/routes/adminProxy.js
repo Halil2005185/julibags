@@ -75,7 +75,7 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
       `${process.env.STRAPI_URL}/api/products`,
       {
         data: {
-          ...JSON.parse(req.body.data),
+          ...(req.body.data ? JSON.parse(req.body.data) : {}),
           image: imageIds,
         },
       },
@@ -91,6 +91,7 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
     console.log("ERROR MESSAGE:", err.message);
     console.log("ERROR STATUS:", err.response?.status);
     console.log("ERROR RESPONSE:", err.response?.data);
+    console.log("FULL ERROR:", err);
 
     res.status(500).json({
       error: err.response?.data || err.message,
