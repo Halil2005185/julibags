@@ -36,6 +36,7 @@ router.post("/login", async (req, res) => {
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
+
 router.post("/products", upload.array("files.images"), async (req, res) => {
   try {
     console.log("req.files length:", req.files?.length);
@@ -43,16 +44,17 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
       "file names:",
       req.files?.map((f) => f.originalname),
     );
+
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
     const formdata = new FormData();
+
     req.files?.forEach((file) => {
-      formdata.append(
-        "files",
-        new Blob([file.buffer], { type: file.mimetype }),
-        file.originalname,
-      );
+      formdata.append("files", file.buffer, {
+        filename: file.originalname,
+        contentType: file.mimetype,
+      });
     });
 
     const uploadRes = await axios.post(
@@ -61,9 +63,11 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
       {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+          ...formdata.getHeaders(),
         },
       },
     );
+
     const imageIds = uploadRes.data.map((img) => img.id);
 
     const productRes = await axios.post(
@@ -74,13 +78,22 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
           image: imageIds,
         },
       },
-      { headers: { Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}` } },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        },
+      },
     );
 
     res.json(productRes.data);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
+    console.log("ERROR MESSAGE:", err.message);
+    console.log("ERROR STATUS:", err.response?.status);
+    console.log("ERROR RESPONSE:", err.response?.data);
+
+    res.status(500).json({
+      error: err.response?.data || err.message,
+    });
   }
 });
 
