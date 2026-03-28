@@ -38,10 +38,11 @@ router.post("/login", async (req, res) => {
 const upload = multer({ storage: multer.memoryStorage() });
 router.post("/products", upload.array("files.images"), async (req, res) => {
   try {
-    console.log("STRAPI_URL:", process.env.STRAPI_URL);
-    console.log("TOKEN:", process.env.STRAPI_API_TOKEN ? "موجود" : "غير موجود");
-    console.log("files:", req.files?.length);
-    console.log("body:", req.body);
+    console.log("req.files length:", req.files?.length);
+    console.log(
+      "file names:",
+      req.files?.map((f) => f.originalname),
+    );
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
@@ -89,9 +90,41 @@ router.delete("/products/:documentId", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
+    const headers = {
+      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+    };
+
+    const productRes = await axios.get(
+      `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=image`,
+      { headers },
+    );
+
+    const product = productRes.data.data;
+
+    let images = [];
+
+    if (Array.isArray(product?.image)) {
+      images = product.image;
+    } else if (Array.isArray(product?.image?.data)) {
+      images = product.image.data;
+    } else if (product?.image?.id) {
+      images = [product.image];
+    } else if (product?.image?.data?.id) {
+      images = [product.image.data];
+    }
+
+    for (const file of images) {
+      if (file?.id) {
+        await axios.delete(
+          `${process.env.STRAPI_URL}/api/upload/files/${file.id}`,
+          { headers },
+        );
+      }
+    }
+
     await axios.delete(
       `${process.env.STRAPI_URL}/api/products/${req.params.documentId}`,
-      { headers: { Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}` } },
+      { headers },
     );
 
     res.json({ message: "تم الحذف بنجاح" });

@@ -49,7 +49,7 @@ function ItemCard({ bag, index }) {
                 className="w-full aspect-square"
             >
                 {images.map((img, i) => {
-                    const imageUrl = `${import.meta.env.VITE_API_URL}${img.url}`
+                    const imageUrl = img.url
                     return (
                         <SwiperSlide key={i}>
                             <img
@@ -63,7 +63,6 @@ function ItemCard({ bag, index }) {
                 })}
             </Swiper>
 
-            {/* Content + أسهم */}
             <div className="p-4" dir="rtl">
                 <p className="text-sm text-gray-400 mb-2">اضغط على الصورة لإرسالها إلى واتساب</p>
                 <h3 className="text-xl font-black text-gray-800 mb-3">{bag.name}</h3>

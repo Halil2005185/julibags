@@ -29,10 +29,22 @@ function AddProduct() {
     function handleImageChange(e) {
         const files = Array.from(e.target.files)
         if (files.length === 0) return
-        const newImages = [...images, ...files].slice(0, 5)
+
+        const uniqueFiles = files.filter(
+            (file) =>
+                !images.some(
+                    (img) =>
+                        img.name === file.name &&
+                        img.size === file.size &&
+                        img.lastModified === file.lastModified
+                )
+        )
+
+        const newImages = [...images, ...uniqueFiles].slice(0, 5)
         setImages(newImages)
-        const newPreviews = newImages.map((file) => URL.createObjectURL(file))
-        setPreviews(newPreviews)
+        setPreviews(newImages.map((file) => URL.createObjectURL(file)))
+
+        e.target.value = ""
     }
 
     function removeImage(index) {
@@ -44,6 +56,7 @@ function AddProduct() {
 
     async function handleSubmit(e) {
         e.preventDefault()
+        if (loading) return
         setError("")
         setSuccess("")
 
@@ -72,7 +85,6 @@ function AddProduct() {
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
                     },
                 }
             )

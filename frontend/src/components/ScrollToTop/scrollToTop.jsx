@@ -7,6 +7,6 @@ function ScrollToTop() {
 
     }, [location.pathname])
 
-    return ScrollToTop
+    return null
 }
 export default ScrollToTop

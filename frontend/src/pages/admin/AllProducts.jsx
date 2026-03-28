@@ -63,7 +63,7 @@ function AllProducts() {
         setEditName(product.name || "")
         setEditImages([])
         const existingPreviews = (product.image || []).map(
-            (img) => `${import.meta.env.VITE_API_URL}${img.url}`
+            (img) => img.url
         )
         setEditPreviews(existingPreviews)
     }
@@ -118,7 +118,7 @@ function AllProducts() {
 
     function getImageUrl(product) {
         if (product.image && product.image.length > 0) {
-            return `${import.meta.env.VITE_API_URL}${product.image[0].url}`
+            return product.image[0].url
         }
         return null
     }
