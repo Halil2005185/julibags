@@ -40,17 +40,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/products", upload.array("files.images"), async (req, res) => {
   try {
-    console.log("req.files length:", req.files?.length);
-    console.log(
-      "file names:",
-      req.files?.map((f) => f.originalname),
-    );
-
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
+    // رفع الصور لـ Strapi (الذي يرفعها لـ Cloudinary)
     const formdata = new FormData();
-
     req.files?.forEach((file) => {
       formdata.append("files", file.buffer, {
         filename: file.originalname,
@@ -71,6 +65,7 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
 
     const imageIds = uploadRes.data.map((img) => img.id);
 
+    // إضافة المنتج مع IDs الصور
     const productRes = await axios.post(
       `${process.env.STRAPI_URL}/api/products`,
       {
@@ -88,17 +83,10 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
 
     res.json(productRes.data);
   } catch (err) {
-    console.log("ERROR MESSAGE:", err.message);
-    console.log("ERROR STATUS:", err.response?.status);
-    console.log("ERROR RESPONSE:", err.response?.data);
-    console.log("FULL ERROR:", err);
-
-    res.status(500).json({
-      error: err.response?.data || err.message,
-    });
+    console.log("ERROR:", err.response?.data || err.message);
+    res.status(500).json({ error: err.response?.data || err.message });
   }
 });
-
 // Delete Product
 router.delete("/products/:documentId", async (req, res) => {
   try {
