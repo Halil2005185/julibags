@@ -4,10 +4,11 @@ import LogoIcon from "/images/LogoImage.jpg"
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 import { useState } from "react";
 import { useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 function Header() {
     const [token, setToken] = useState(localStorage.getItem("adminToken"))
+    const navigate = useNavigate()
     useEffect(() => {
         function handleStorage() {
             setToken(localStorage.getItem("adminToken"))
@@ -15,8 +16,15 @@ function Header() {
         window.addEventListener("storage", handleStorage)
         return () => window.removeEventListener("storage", handleStorage)
     }, [])
+    function LongOut() {
+        localStorage.removeItem("adminToken")
+        localStorage.removeItem("tokenExpiry")
+        window.dispatchEvent(new Event("storage"))
+
+        navigate("/admin/adminLogin101")
+    }
     return (
-        <header className="w-screen flex items-center px-4 sm:px-8 py-3 justify-between h-[80px] shadow-lg relative overflow-hidden">
+        <header className=" flex items-center px-4 sm:px-8 py-3 justify-between h-[80px] shadow-lg relative overflow-hidden">
             <Link to={"/"}>
                 <div className="flex items-center gap-3 cursor-pointer group">
                     <img
@@ -37,13 +45,18 @@ function Header() {
 
             {
                 token &&
-                <div className="flex items-center">
+                <div className="flex items-center absolute sm:static z-40 left-0 ">
                     <Link
                         className="text-[11px] sm:text-[14px] font-semibold text-white bg-black/20 backdrop-blur-sm border border-white/20 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl hover:bg-black/30 hover:border-white/40 hover:scale-105 hover:-translate-y-0.5 transition-all duration-300 shadow-lg"
                         to={"/admin/adminMain"}
                     >
                         ⚡ Admin
                     </Link>
+                    <button
+                        onClick={LongOut}
+                        className="text-[11px] sm:text-[14px] font-semibold text-white bg-black/20 backdrop-blur-sm border border-white/20 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl hover:bg-black/30 hover:border-white/40 hover:scale-105 hover:-translate-y-0.5 transition-all duration-300 shadow-lg"                    >
+                        longOut
+                    </button>
                 </div>
             }
 

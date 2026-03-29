@@ -20,9 +20,10 @@ function AdminLogin() {
             })
             const token = res.data.token
             localStorage.setItem("adminToken", token)
-            setTimeout(() => {
-                navigate("/admin/adminMain")
-            }, 1000)
+            localStorage.setItem("tokenExpiry", Date.now() + 7 * 24 * 60 * 60 * 1000)
+            window.dispatchEvent(new Event("storage"))  // ← أضف هذا
+
+            navigate("/admin/adminMain")
         } catch (error) {
             setError("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.")
             console.log(error)

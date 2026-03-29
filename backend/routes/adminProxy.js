@@ -85,6 +85,9 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
   } catch (err) {
     console.log("ERROR DETAILS:", JSON.stringify(err.response?.data, null, 2));
     console.log("ERROR STATUS:", err.response?.status);
+    console.log("ERROR MESSAGE:", err.message);
+    console.log("ERROR STACK:", err.stack);
+    console.log("ERROR RESPONSE:", err.response?.data);
     res.status(500).json({ error: err.response?.data || err.message });
   }
 });

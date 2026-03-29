@@ -1,6 +1,6 @@
 import "../../pages/Home/home.css"
 function    Animation() {
-    return <section className="w-screen flex justify-center items-center flex-col  ">
+    return <section className="flex justify-center items-center flex-col  ">
         <div className="flex flex-col items-center justify-center " >
             <p className="floating text-[60px] mx-auto inlin">👜</p>
             <h1 className="Paragraph" >
