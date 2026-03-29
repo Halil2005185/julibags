@@ -149,13 +149,12 @@ router.put(
 
       let imageIds = [];
       if (req.files?.length > 0) {
-        const formdata = new FormData();
+        const formdata = new FormData();  // ← form-data package
         req.files.forEach((file) => {
-          formdata.append(
-            "files",
-            new Blob([file.buffer], { type: file.mimetype }),
-            file.originalname,
-          );
+          formdata.append("files", file.buffer, {
+            filename: file.originalname,
+            contentType: file.mimetype,
+          });
         });
         const uploadRes = await axios.post(
           `${process.env.STRAPI_URL}/api/upload`,
@@ -163,8 +162,9 @@ router.put(
           {
             headers: {
               Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+              ...formdata.getHeaders(),  // ← مهم!
             },
-          },
+          }
         );
         imageIds = uploadRes.data.map((img) => img.id);
       }
@@ -177,15 +177,15 @@ router.put(
         { data: updateData },
         {
           headers: { Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}` },
-        },
+        }
       );
 
       res.json(productRes.data);
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: err.message });
+      console.log("ERROR:", err.response?.data || err.message);
+      res.status(500).json({ error: err.response?.data || err.message });
     }
-  },
+  }
 );
 
 export default router;
