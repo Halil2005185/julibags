@@ -138,7 +138,6 @@ router.delete("/products/:documentId", async (req, res) => {
   }
 });
 
-// Edit Product
 router.put(
   "/products/:documentId",
   upload.array("files.image"),
@@ -147,37 +146,61 @@ router.put(
       const token = req.headers.authorization?.split(" ")[1];
       jwt.verify(token, process.env.JWT_SECRET);
 
+      const headers = {
+        Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+      };
+
+      // 1️⃣ جلب الصور القديمة
       let imageIds = [];
       if (req.files?.length > 0) {
-        const formdata = new FormData();  // ← form-data package
+        const oldProduct = await axios.get(
+          `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=image`,
+          { headers },
+        );
+
+        const oldImages = oldProduct.data.data?.image || [];
+
+        // 2️⃣ حذف الصور القديمة من Strapi و Cloudinary
+        for (const img of oldImages) {
+          if (img?.id) {
+            await axios.delete(
+              `${process.env.STRAPI_URL}/api/upload/files/${img.id}`,
+              { headers },
+            );
+          }
+        }
+
+        // 3️⃣ رفع الصور الجديدة
+        const formdata = new FormData();
         req.files.forEach((file) => {
           formdata.append("files", file.buffer, {
             filename: file.originalname,
             contentType: file.mimetype,
           });
         });
+
         const uploadRes = await axios.post(
           `${process.env.STRAPI_URL}/api/upload`,
           formdata,
           {
             headers: {
-              Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-              ...formdata.getHeaders(),  // ← مهم!
+              ...headers,
+              ...formdata.getHeaders(),
             },
-          }
+          },
         );
+
         imageIds = uploadRes.data.map((img) => img.id);
       }
 
+      // 4️⃣ تحديث المنتج
       const updateData = { ...JSON.parse(req.body.data) };
       if (imageIds.length > 0) updateData.image = imageIds;
 
       const productRes = await axios.put(
         `${process.env.STRAPI_URL}/api/products/${req.params.documentId}`,
         { data: updateData },
-        {
-          headers: { Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}` },
-        }
+        { headers },
       );
 
       res.json(productRes.data);
@@ -185,7 +208,6 @@ router.put(
       console.log("ERROR:", err.response?.data || err.message);
       res.status(500).json({ error: err.response?.data || err.message });
     }
-  }
+  },
 );
-
 export default router;
