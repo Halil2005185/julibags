@@ -15,6 +15,7 @@ import AddProduct from "./pages/admin/addProduct"
 import AllProducts from "./pages/admin/AllProducts"
 import ProtectedRoute from "./components/ProtectedRoute/protectedRoute"
 import NotFound from "./pages/NotFound/notFound"
+import { Analytics } from "@vercel/analytics/react"
 function App() {
   return (
     <section className="min-h-screen flex flex-col">
@@ -58,6 +59,7 @@ function App() {
 
       </div>
       <Footer />
+      <Analytics />
     </section>
   )
 }
