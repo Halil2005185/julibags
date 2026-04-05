@@ -1,14 +1,46 @@
 import axios from "axios";
-import express, { json } from "express";
+import express from "express";
 import jwt from "jsonwebtoken";
 import multer from "multer";
-import FormData from "form-data";
+import { v2 as cloudinary } from "cloudinary";
+
 const router = express.Router();
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are accepted"));
+    }
+  },
+});
+
+const uploadToCloudinary = async (buffer, folder) => {
+
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  const base64 = buffer.toString("base64");
+  const dataUri = `data:image/jpeg;base64,${base64}`;
+
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder: folder || "products",
+  });
+
+  return result;
+};
+
+// ✅ Login
 router.post("/login", async (req, res) => {
   try {
-    console.log(req.body);
-
     const strapiRes = await axios.post(
       `${process.env.STRAPI_URL}/admin/login`,
       req.body,
@@ -23,55 +55,44 @@ router.post("/login", async (req, res) => {
     const ourToken = jwt.sign(
       { email: req.body.email },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: "365d" },
     );
     res.json({ token: ourToken });
   } catch (error) {
-    console.log(error);
-    console.log("Strapi error:", error.response?.data); // ← أضف هذا
-
     return res
       .status(401)
       .json({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة." });
   }
 });
 
-const upload = multer({ storage: multer.memoryStorage() });
-
+// ✅ Add product
 router.post("/products", upload.array("files.images"), async (req, res) => {
+  const uploadedPublicIds = [];
   try {
     const token = req.headers.authorization?.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
-    // رفع الصور لـ Strapi (الذي يرفعها لـ Cloudinary)
-    const formdata = new FormData();
-    req.files?.forEach((file) => {
-      formdata.append("files", file.buffer, {
-        filename: file.originalname,
-        contentType: file.mimetype,
-      });
-    });
-
-    const uploadRes = await axios.post(
-      `${process.env.STRAPI_URL}/api/upload`,
-      formdata,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-          ...formdata.getHeaders(),
-        },
-      },
+    // 1️⃣ ارفع الصور لـ Cloudinary مباشرة
+    const uploadedImages = await Promise.all(
+      req.files.map(async (file) => {
+        const result = await uploadToCloudinary(file.buffer, "julybags");
+        uploadedPublicIds.push(result.public_id);
+        return {
+          url: result.secure_url,
+          public_id: result.public_id,
+        };
+      }),
     );
 
-    const imageIds = uploadRes.data.map((img) => img.id);
+    // 2️⃣ أضف المنتج لـ Strapi مع روابط الصور
+    const productData = req.body.data ? JSON.parse(req.body.data) : {};
 
-    // إضافة المنتج مع IDs الصور
     const productRes = await axios.post(
       `${process.env.STRAPI_URL}/api/products`,
       {
         data: {
-          ...(req.body.data ? JSON.parse(req.body.data) : {}),
-          image: imageIds,
+          ...productData,
+          images: uploadedImages, // ✅ array من { url, public_id }
         },
       },
       {
@@ -83,67 +104,24 @@ router.post("/products", upload.array("files.images"), async (req, res) => {
 
     res.json(productRes.data);
   } catch (err) {
-    console.log("ERROR DETAILS:", JSON.stringify(err.response?.data, null, 2));
-    console.log("ERROR STATUS:", err.response?.status);
-    console.log("ERROR MESSAGE:", err.message);
-    console.log("ERROR STACK:", err.stack);
-    console.log("ERROR RESPONSE:", err.response?.data);
+    // لو Strapi فشل احذف الصور من Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    for (const publicId of uploadedPublicIds) {
+      await cloudinary.uploader.destroy(publicId);
+    }
+    console.log("❌ ADD ERROR:", err.response?.data || err.message);
     res.status(500).json({ error: err.response?.data || err.message });
   }
 });
-// Delete Product
-router.delete("/products/:documentId", async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
-    jwt.verify(token, process.env.JWT_SECRET);
 
-    const headers = {
-      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-    };
-
-    const productRes = await axios.get(
-      `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=image`,
-      { headers },
-    );
-
-    const product = productRes.data.data;
-
-    let images = [];
-
-    if (Array.isArray(product?.image)) {
-      images = product.image;
-    } else if (Array.isArray(product?.image?.data)) {
-      images = product.image.data;
-    } else if (product?.image?.id) {
-      images = [product.image];
-    } else if (product?.image?.data?.id) {
-      images = [product.image.data];
-    }
-
-    for (const file of images) {
-      if (file?.id) {
-        await axios.delete(
-          `${process.env.STRAPI_URL}/api/upload/files/${file.id}`,
-          { headers },
-        );
-      }
-    }
-
-    await axios.delete(
-      `${process.env.STRAPI_URL}/api/products/${req.params.documentId}`,
-      { headers },
-    );
-
-    res.json({ message: "تم الحذف بنجاح" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
+// ✅ Edit product
 router.put(
   "/products/:documentId",
-  upload.array("files.image"),
+  upload.array("files.images"),
   async (req, res) => {
     try {
       const token = req.headers.authorization?.split(" ")[1];
@@ -153,52 +131,45 @@ router.put(
         Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
       };
 
-      // 1️⃣ جلب الصور القديمة
-      let imageIds = [];
+      let images = null;
+
       if (req.files?.length > 0) {
+        // 1️⃣ احصل على الصور القديمة
         const oldProduct = await axios.get(
-          `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=image`,
+          `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=*`,
           { headers },
         );
 
-        const oldImages = oldProduct.data.data?.image || [];
+        const oldImages = oldProduct.data?.data?.images || [];
 
-        // 2️⃣ حذف الصور القديمة من Strapi و Cloudinary
+        // 2️⃣ احذف الصور القديمة من Cloudinary
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+
         for (const img of oldImages) {
-          if (img?.id) {
-            await axios.delete(
-              `${process.env.STRAPI_URL}/api/upload/files/${img.id}`,
-              { headers },
-            );
+          if (img?.public_id) {
+            await cloudinary.uploader.destroy(img.public_id);
           }
         }
 
-        // 3️⃣ رفع الصور الجديدة
-        const formdata = new FormData();
-        req.files.forEach((file) => {
-          formdata.append("files", file.buffer, {
-            filename: file.originalname,
-            contentType: file.mimetype,
-          });
-        });
-
-        const uploadRes = await axios.post(
-          `${process.env.STRAPI_URL}/api/upload`,
-          formdata,
-          {
-            headers: {
-              ...headers,
-              ...formdata.getHeaders(),
-            },
-          },
+        // 3️⃣ ارفع الصور الجديدة لـ Cloudinary
+        images = await Promise.all(
+          req.files.map(async (file) => {
+            const result = await uploadToCloudinary(file.buffer, "julybags");
+            return {
+              url: result.secure_url,
+              public_id: result.public_id,
+            };
+          }),
         );
-
-        imageIds = uploadRes.data.map((img) => img.id);
       }
 
-      // 4️⃣ تحديث المنتج
+      // 4️⃣ حدّث المنتج في Strapi
       const updateData = { ...JSON.parse(req.body.data) };
-      if (imageIds.length > 0) updateData.image = imageIds;
+      if (images) updateData.images = images;
 
       const productRes = await axios.put(
         `${process.env.STRAPI_URL}/api/products/${req.params.documentId}`,
@@ -208,9 +179,54 @@ router.put(
 
       res.json(productRes.data);
     } catch (err) {
-      console.log("ERROR:", err.response?.data || err.message);
+      console.log("❌ EDIT ERROR:", err.response?.data || err.message);
       res.status(500).json({ error: err.response?.data || err.message });
     }
   },
 );
+
+// ✅ Delete product
+router.delete("/products/:documentId", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    const headers = {
+      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+    };
+
+    // 1️⃣ احصل على بيانات المنتج
+    const productRes = await axios.get(
+      `${process.env.STRAPI_URL}/api/products/${req.params.documentId}?populate=*`,
+      { headers },
+    );
+
+    const images = productRes.data?.data?.images || [];
+
+    // 2️⃣ احذف الصور من Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    for (const img of images) {
+      if (img?.public_id) {
+        await cloudinary.uploader.destroy(img.public_id);
+      }
+    }
+
+    // 3️⃣ احذف المنتج من Strapi
+    await axios.delete(
+      `${process.env.STRAPI_URL}/api/products/${req.params.documentId}`,
+      { headers },
+    );
+
+    res.json({ message: "تم الحذف بنجاح" });
+  } catch (err) {
+    console.log("❌ DELETE ERROR:", err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

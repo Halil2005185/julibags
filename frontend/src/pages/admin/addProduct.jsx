@@ -65,6 +65,12 @@ function AddProduct() {
             return
         }
 
+        // ✅ أضف تحقق من الصور
+        if (images.length === 0) {
+            setError("يرجى إضافة صورة واحدة على الأقل")
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -94,9 +100,15 @@ function AddProduct() {
             setCategory("")
             setImages([])
             setPreviews([])
+
         } catch (err) {
             console.error(err)
-            setError("حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى.")
+            // ✅ أظهر الخطأ الحقيقي من الباكند
+            setError(
+                err.response?.data?.error?.message ||
+                err.response?.data?.error ||
+                "حدث خطأ أثناء إضافة المنتج"
+            )
         } finally {
             setLoading(false)
         }

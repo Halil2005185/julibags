@@ -43,7 +43,7 @@ function CardList({ categorySlug }) {
 
                     </div>
                 ))}
-
+    
             </section>
         )
     }

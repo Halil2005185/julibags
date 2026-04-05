@@ -62,9 +62,7 @@ function AllProducts() {
         setEditProduct(product)
         setEditName(product.name || "")
         setEditImages([])
-        const existingPreviews = (product.image || []).map(
-            (img) => img.url
-        )
+        const existingPreviews = (product.images || []).map((img) => img.url)
         setEditPreviews(existingPreviews)
     }
 
@@ -88,7 +86,7 @@ function AllProducts() {
             const formData = new FormData()
             formData.append("data", JSON.stringify({ name: editName.trim() }))
             editImages.forEach((file) => {
-                formData.append("files.image", file)
+                formData.append("files.images", file)
             })
             const token = localStorage.getItem("adminToken")
             await axios.put(
@@ -117,8 +115,8 @@ function AllProducts() {
     }
 
     function getImageUrl(product) {
-        if (product.image && product.image.length > 0) {
-            return product.image[0].url
+        if (product.images && product.images.length > 0) {
+            return product.images[0].url
         }
         return null
     }
@@ -217,12 +215,12 @@ function AllProducts() {
                                                     </svg>
                                                 </div>
                                             )}
-                                            {product.image && product.image.length > 1 && (
+                                            {product.images && product.images.length > 1 && (
                                                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md text-[11px] text-white font-semibold flex items-center gap-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
-                                                    {product.image.length}
+                                                    {product.images.length}
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />

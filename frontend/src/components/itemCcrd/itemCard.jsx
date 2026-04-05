@@ -9,7 +9,7 @@ function ItemCard({ bag, index }) {
     const cardRef = useRef(null)
     const [visible, setVisible] = useState(false)
     const [swiperInstance, setSwiperInstance] = useState(null)
-    const [lightbox, setLightbox] = useState(null) // ← أضف هذا
+    const [lightbox, setLightbox] = useState(null)
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -32,11 +32,11 @@ function ItemCard({ bag, index }) {
         window.open(Url, "_blank", "noopener,noreferrer")
     }
 
-    const images = bag?.image || []
+    // ✅ الجديد
+    const images = bag?.images || []
 
     return (
         <>
-            {/* Lightbox */}
             {lightbox && (
                 <div
                     className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
@@ -67,7 +67,6 @@ function ItemCard({ bag, index }) {
                 </div>
             )}
 
-            {/* البطاقة */}
             <div
                 ref={cardRef}
                 className="bg-white rounded-3xl overflow-hidden shadow-lg w-full transition-all duration-700"
@@ -90,7 +89,7 @@ function ItemCard({ bag, index }) {
                                     className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                                     src={imageUrl}
                                     alt="ProductImage"
-                                    onClick={() => setLightbox(imageUrl)} 
+                                    onClick={() => setLightbox(imageUrl)}
                                 />
                             </SwiperSlide>
                         )

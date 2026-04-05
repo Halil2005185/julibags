@@ -14,20 +14,13 @@
     "name": {
       "type": "string"
     },
-    "image": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
     "category": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::category.category"
+    },
+    "images": {
+      "type": "json"
     }
   }
 }
