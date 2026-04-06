@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import ItemCard from "../itemCcrd/itemCard";
 import axios from "axios";
-import Pagination from "../Pagination/Pagination"; 
+import Pagination from "../Pagination/Pagination";
 
 function CardList({ categorySlug }) {
     const [bags, setBags] = useState([])
     const [loading, setLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [pageCount, setPageCount] = useState(1)
-
+    const m = 0
     const handlePageChange = (page) => {
         setCurrentPage(page)
         window.scrollTo({ top: 0, behavior: "smooth" })
