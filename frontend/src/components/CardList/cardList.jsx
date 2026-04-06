@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ItemCard from "../itemCcrd/itemCard";
 import axios from "axios";
-import Pagination from "../Pagination/Pagination";
+import Pagination from "../Pagination/pagination";
 
 function CardList({ categorySlug }) {
     const [bags, setBags] = useState([])
