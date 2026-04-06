@@ -8,7 +8,6 @@ function CardList({ categorySlug }) {
     const [loading, setLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [pageCount, setPageCount] = useState(1)
-    const m = 0
     const handlePageChange = (page) => {
         setCurrentPage(page)
         window.scrollTo({ top: 0, behavior: "smooth" })
