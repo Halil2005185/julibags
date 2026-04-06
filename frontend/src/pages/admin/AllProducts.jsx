@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import SiberBar, { SidebarToggle } from "./SiberBar/siberBar"
 import axios from "axios"
+import Pagination from "../../components/Pagination/pagination"
 
 function AllProducts() {
     const [products, setProducts] = useState([])
@@ -15,10 +16,12 @@ function AllProducts() {
     const [toast, setToast] = useState({ show: false, message: "", type: "" })
     const [search, setSearch] = useState("")
     const editFileRef = useRef(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageCount, setPageCount] = useState(1)
 
     useEffect(() => {
         fetchProducts()
-    }, [])
+    }, [currentPage])
 
     useEffect(() => {
         if (toast.show) {
@@ -27,10 +30,20 @@ function AllProducts() {
         }
     }, [toast.show])
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page)
+        window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
     async function fetchProducts() {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products?populate=*`)
+            const res = await axios.get(
+                `${import.meta.env.VITE_API_URL}/api/products?populate=*&pagination[page]=${currentPage}&pagination[pageSize]=12&sort=createdAt:desc`
+            )
             setProducts(res.data.data)
+            if (res.data.meta?.pagination) {
+                setPageCount(res.data.meta.pagination.pageCount)
+            }
         } catch (err) {
             console.error("Failed to fetch products:", err)
         } finally {
@@ -193,67 +206,76 @@ function AllProducts() {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {filteredProducts.map((product) => {
-                                const imgUrl = getImageUrl(product)
-                                return (
-                                    <div
-                                        key={product.id}
-                                        className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group hover:shadow-lg hover:shadow-gray-200/60 hover:-translate-y-1 transition-all duration-300"
-                                    >
-                                        <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                                            {imgUrl ? (
-                                                <img
-                                                    src={imgUrl}
-                                                    alt={product.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                            {product.images && product.images.length > 1 && (
-                                                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md text-[11px] text-white font-semibold flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                    {product.images.length}
-                                                </div>
-                                            )}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                                        </div>
+                        <div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {filteredProducts.map((product) => {
+                                    const imgUrl = getImageUrl(product)
+                                    return (
+                                        <div
+                                            key={product.id}
+                                            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group hover:shadow-lg hover:shadow-gray-200/60 hover:-translate-y-1 transition-all duration-300"
+                                        >
+                                            <div className="relative aspect-square bg-gray-50 overflow-hidden">
+                                                {imgUrl ? (
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                {product.images && product.images.length > 1 && (
+                                                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md text-[11px] text-white font-semibold flex items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        {product.images.length}
+                                                    </div>
+                                                )}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                            </div>
 
-                                        <div className="p-4">
-                                            <h3 className="text-[15px] font-bold text-gray-800 mb-3 truncate" dir="rtl">
-                                                {product.name}
-                                            </h3>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => openEdit(product)}
-                                                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-600 font-semibold text-sm hover:bg-indigo-100 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                    تعديل
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeleteId(product.documentId)}
-                                                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-50 text-red-500 font-semibold text-sm hover:bg-red-100 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                    حذف
-                                                </button>
+                                            <div className="p-4">
+                                                <h3 className="text-[15px] font-bold text-gray-800 mb-3 truncate" dir="rtl">
+                                                    {product.name}
+                                                </h3>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => openEdit(product)}
+                                                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-600 font-semibold text-sm hover:bg-indigo-100 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                        تعديل
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteId(product.documentId)}
+                                                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-50 text-red-500 font-semibold text-sm hover:bg-red-100 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                        حذف
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })}
+                            </div>
+                            {!loading && pageCount > 1 && (
+                                <Pagination
+                                    currentPage={currentPage}
+                                    setCurrentPage={handlePageChange}
+                                    pageCount={pageCount}
+                                />
+                            )}
                         </div>
                     )}
                 </div>
@@ -408,6 +430,7 @@ function AllProducts() {
                     </div>
                 )}
             </section>
+
         </SiberBar>
     )
 }
