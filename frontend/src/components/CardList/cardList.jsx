@@ -23,10 +23,7 @@ function CardList({ categorySlug }) {
                     :
                     await axios.get(`${import.meta.env.VITE_API_URL}/api/products?populate=*&pagination[page]=${currentPage}&pagination[pageSize]=12&sort=createdAt:desc`)
 
-                console.log("DATA:", res.data.data)
-                console.log("META:", res.data.meta)
                 setBags(res.data.data)
-                console.log();
 
                 if (res.data.meta?.pagination) {
                     setPageCount(res.data.meta.pagination.pageCount)
