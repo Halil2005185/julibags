@@ -15,11 +15,11 @@ function ItemCard({ bag, index }) {
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
-                    setTimeout(() => setVisible(true), (index % 3) * 120)
+                    setTimeout(() => setVisible(true), (index % 2) * 10)
                     observer.disconnect()
                 }
             },
-            { threshold: 0.15 }
+            { threshold: 0.10 }
         )
         if (cardRef.current) observer.observe(cardRef.current)
         return () => observer.disconnect()
@@ -32,7 +32,6 @@ function ItemCard({ bag, index }) {
         window.open(Url, "_blank", "noopener,noreferrer")
     }
 
-    // ✅ الجديد
     const images = bag?.images || []
 
     return (
